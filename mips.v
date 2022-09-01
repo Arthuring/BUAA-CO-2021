@@ -101,15 +101,13 @@ module mips(
 	wire W_WE;
 	wire [`MGRFWDSel_WIDE-1:0] W_MGRFWDSel;
 	wire [1:0] W_MA3Sel;
-	wire W_check;
 	/////////////////ForwardControl///////////////////////////
 	ForwardControl FC(
 		.D_Instr(D_Instr),
     	.E_Instr(E_Instr),
     	.M_Instr(M_Instr),
     	.W_Instr(W_Instr),
-		.W_check(W_check),
-		
+
     	.D_MFRD1Sel(D_MFRD1Sel),
     	.D_MFRD2Sel(D_MFRD2Sel),
     	.E_MFRD1Sel(E_MFRD1Sel),
@@ -126,7 +124,7 @@ module mips(
 		.E_Instr(E_Instr),
 		.M_Instr(M_Instr),
 		.W_Instr(W_Instr),
-		
+
 		.stall(stall)
 	);
 	assign F_PC_WE = (stall == 0 ) ? 1 : 0;
@@ -298,8 +296,7 @@ module mips(
 	
 	
 	//=====================MMMMMMMM=================
-	wire M_lh_so;
-	reg M_check;
+
 	EX_MEM M_reg(
 		.clk(clk),
 		.reset(reset),
@@ -330,8 +327,7 @@ module mips(
 		.DMWr(M_DMWr),
 		.DMOp(M_DMOp),
 		.M_MGRFWDSel(M_MGRFWDSel),
-		.IfSigned(IfSigned),
-		.lh_so(M_lh_so)
+		.IfSigned(IfSigned)
 	);
 	
 	DM M_DM(
@@ -345,27 +341,6 @@ module mips(
 		.DMOp(M_DMOp),
 		.RD(M_DM_RD)
 	);
-	reg [5:0] cnt1, cnt0;
-	integer i;
-	always @(*)begin
-		cnt1 = 0;
-		cnt0 = 0;
-		for (i = 0;i < 16 ; i = i + 1)begin
-			if(M_DM_RD[i] == 1)begin
-				cnt1 = cnt1 + 1;
-			end
-			else if(M_DM_RD[i] == 0)begin
-				cnt0 = cnt0 + 1;
-			end
-		end
-		if (cnt1 >= cnt0)begin
-			M_check = 1;
-		end
-		else begin
-			M_check = 0;
-		end
-	end
-		
 	//***forward_to_M***
 	assign M_MFV2 = (M_MFV2Sel == `W_TO_M) ? W_MGRFWD_O :
 					M_V2; 
@@ -373,7 +348,6 @@ module mips(
 	
 	
 	//=====================WWWWWWWW=================
-	
 	MEM_WB W_reg(
 		.clk(clk),
 		.reset(reset),
@@ -384,41 +358,33 @@ module mips(
     	.M_PC8(M_PC8),
     	//.M_A3(M_A3),
     	.M_Instr(M_Instr),	
-		.M_check(M_check),
-		
+	 
     	.W_C(W_C),
     	.W_DR(W_DR),
     	.W_PC(W_PC),
 		.W_EXT(W_EXT),
     	.W_PC8(W_PC8),
     	//.W_A3(W_A3),
-    	.W_Instr(W_Instr),
-		.W_check(W_check)
+    	.W_Instr(W_Instr)
 	);
 
 	CU W_CU(
 		.Instr(W_Instr),
-		.check(W_check),
 		//.WE(W_WE),
 		.W_MGRFWDSel(W_MGRFWDSel),
 		//.MA3Sel(W_MA3Sel)
 		.write_reg(W_A3)
 	);
 	
-	/*MUX_b2_32 W_MGRFWD(
+	MUX_b2_32 W_MGRFWD(
 		.I0(W_C),
 		.I1(W_DR),
 		.I2(W_PC + 32'd8),
 		.I3(W_EXT),
 		.Op(W_MGRFWDSel),
 		.Out(W_MGRFWD_O)
-	);*/
-	assign W_MGRFWD_O = 	(W_MGRFWDSel == `MGRFWDLHSO) ? W_DR:
-								(W_MGRFWDSel == `MGRFWDDW) ? 	W_DR:
-								(W_MGRFWDSel == `MGRFWDNPC) ? W_PC + 32'd8:
-								(W_MGRFWDSel == `MGRFWDLui) ? W_EXT:
-								(W_MGRFWDSel == `MGRFWDALU) ? W_C :
-								0;
+	);
+	
 	/*assign W_MA3 = (W_MA3Sel == `MA3Rd ) ? W_Instr[15:11] :
 					   (W_MA3Sel == `MA3Rt)  ? W_Instr[20:16] :
 						(W_MA3Sel == `MA3R31) ? 5'd31:

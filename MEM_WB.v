@@ -27,8 +27,7 @@ module MEM_WB(
     input [31:0] M_PC8,
     input [31:0] M_EXT,
     //input [4:0] M_A3,
-    input [31:0] M_Instr,
-	input M_check,
+    input [31:0] M_Instr,	
 	 
     output reg [31:0] W_C,
     output reg [31:0] W_DR,
@@ -36,8 +35,7 @@ module MEM_WB(
     output reg [31:0] W_EXT,
     output reg [31:0] W_PC8,
    // output reg [4:0] W_A3,
-    output reg [31:0] W_Instr,
-	 output reg W_check
+    output reg [31:0] W_Instr
     );
     always @(posedge clk) begin
         if(reset)begin
@@ -48,7 +46,6 @@ module MEM_WB(
             //W_A3    <= 0;
             W_Instr <= 0;
             W_EXT <= 0;
-				W_check <= 0;
         end
         else begin
             W_C     <= M_C;
@@ -58,7 +55,6 @@ module MEM_WB(
            // W_A3    <= M_A3;
             W_EXT   <= M_EXT;
             W_Instr <= M_Instr;
-				W_check <= M_check;
         end
     end
 

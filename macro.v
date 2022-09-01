@@ -22,7 +22,7 @@
 `define ALUOp_WIDE			4
 `define NPCOp_WIDE			3
 `define EXTOp_WIDE			2
-`define MGRFWDSel_WIDE		3
+`define MGRFWDSel_WIDE		2
 `define MALUBSel_WIDE		2
 `define MALUASel_WIDE		2
 `define DMOp_WIDE				3
@@ -57,11 +57,10 @@
 `define MA3Rt       2'b01
 `define MA3R31      2'b10
 ////////MGRFWDSel//////////////////////
-`define MGRFWDALU	3'b000
-`define MGRFWDDW	3'b001
-`define MGRFWDNPC	3'b010
-`define MGRFWDLui	3'b011
-`define MGRFWDLHSO 3'b100
+`define MGRFWDALU	2'b00
+`define MGRFWDDW	2'b01
+`define MGRFWDNPC	2'b10
+`define MGRFWDLui	2'b11
 ////////MALUBSel//////////////////////
 `define MALUBRD2	2'b00
 `define MALUBEXT	2'b01

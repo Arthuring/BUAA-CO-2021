@@ -24,7 +24,6 @@ module CU(
     //input [5:0] Op,
    // input [5:0] Func,
 	 input [31:0] Instr,
-	 input check,
 	 //input Zero,
 	 
 	 //divide
@@ -44,7 +43,6 @@ module CU(
 	 output j_r,
 	 output j_al,
 	 output Lui,
-	 output lh_so,
 	 //control
 	 output [`NPCOp_WIDE-1:0] NPCOp,
 	 //output WE,
@@ -92,7 +90,6 @@ module CU(
 	wire sllv	= (Op == 6'b000000) && (Func == 6'b000100);
 	wire sltu	= (Op == 6'b000000) && (Func == 6'b101011);
 	wire j		= (Op == 6'b000010);
-	wire lhso 	= (Op == 6'b100111);
 	
 	//class
 	assign load = ( lw | lb | lh );
@@ -104,7 +101,7 @@ module CU(
 	assign j_r = ( jr );
 	assign Lui = (lui);
 	assign j_al = (jal);
-	assign lh_so = lhso;
+	
 	//control Info
 
 	assign NPCOp	=	beq	? `BEQ:
@@ -116,8 +113,7 @@ module CU(
 							
 	//assign WE = calc_r | calc_i | jal | load ; 
 	
-	assign write_reg = (lhso) ? (check === 1'b0 ? 5'd31 : rt_ad):
-							 ( calc_r ) 			? rd_ad :
+	assign write_reg = ( calc_r ) 			? rd_ad :
 							 ( calc_i | load )	? rt_ad :
 							 (jal)			 		? 5'd31 :
 							 5'd0;		 
@@ -130,7 +126,6 @@ module CU(
 							lh		? `SIGNED	:
 							sh		? `SIGNED	:
 							lui	? `EXT_LUI	:
-							lhso	? `SIGNED	:
 							2'b00;
 							
 	assign ALUOp	=	addu	? `ADD		:
@@ -147,25 +142,23 @@ module CU(
 							sllv	? `SLL		:
 							sltu	? `SLTU		:
 							beq	? `SUB		:
-							lhso	? `ADD		:
 							4'd0;
 		
 	assign DMWr = sw | sb | sh ;
 	assign DMOp 	=	( lw | sw )	? `WORD	:
-							( lh | sh | lhso  )	? `HALF	:
+							( lh | sh )	? `HALF	:
 							( lb | sb ) ? `BITE	:
 							3'b000;
-	assign IfSigned = ( lh | lb | lhso ) ? 1: 0;
+	assign IfSigned = ( lh | lb ) ? 1: 0;
 	/*assign MA3Sel	= 	( addu | subu | slt | sll | sllv | sltu ) ? `MA3Rd :
 							(ori | lw | lui | lb | lh  ) ? `MA3Rt	:
 							(jal) ? `MA3R31 :
 							2'b00;*/
-	assign W_MGRFWDSel	= (lhso) ? (check == 1'b1 ? `MGRFWDLHSO : `MGRFWDNPC):
-							( lw | lb |lh ) ? `MGRFWDDW :
+	assign W_MGRFWDSel	= ( lw | lb |lh ) ? `MGRFWDDW :
 							(jal) ? `MGRFWDNPC :
 							(lui) ? `MGRFWDLui:
 							`MGRFWDALU;
-	assign MALUBSel	= ( ori | lw | sw | lb | sb | lh | sh | lhso ) ? `MALUBEXT:
+	assign MALUBSel	= ( ori | lw | sw | lb | sb | lh | sh  ) ? `MALUBEXT:
 							2'b00;
 	assign MALUASel = (sll) ? `MALUA_SHALT :
 							2'b00;

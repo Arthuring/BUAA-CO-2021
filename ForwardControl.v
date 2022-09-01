@@ -24,7 +24,6 @@ module ForwardControl(
     input [31:0] E_Instr,
     input [31:0] M_Instr,
     input [31:0] W_Instr,
-	 input W_check,
 
     output [1:0] D_MFRD1Sel,
     output [1:0] D_MFRD2Sel,
@@ -59,8 +58,7 @@ module ForwardControl(
     );
     CU w_f_cu(
         .Instr(W_Instr),
-        .write_reg(W_A),
-		  .check(W_check)
+        .write_reg(W_A)
     );
 
     assign D_MFRD1Sel = (E_A != 5'b0 && D_rs_ad == E_A)    ? `E_TO_D   :
