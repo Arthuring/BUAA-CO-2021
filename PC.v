@@ -1,5 +1,6 @@
 `timescale 1ns / 1ps
 `include "macro.v"
+
 //////////////////////////////////////////////////////////////////////////////////
 // Company: 
 // Engineer: 
@@ -23,7 +24,11 @@ module PC(
 	input clk,
 	input reset,
 	input WE,
-    input [31:0] DI,
+   input [31:0] DI,
+	input D_eret,
+	//input [31:0] EPC,
+	//input interupt,
+	 output AdEL,
     output [31:0] DO
     );
 
@@ -37,9 +42,11 @@ module PC(
 			pc <= `PC_INI;
 		end
 		else begin
-			if (WE == 1) pc <= DI;
+			if (WE == 1) begin 
+					pc <= DI;
+			end
 		end
 	end
 	assign DO = pc;
-	
+	assign AdEL = (|pc[1:0]) ||(pc < `MIN_PC) || (pc > `MAX_PC); 
 endmodule

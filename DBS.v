@@ -21,8 +21,11 @@
 //////////////////////////////////////////////////////////////////////////////////
 module DBS(
     input [1:0] Ad,
+    input [31:0] Addr,
     input [2:0] LdType,
     input [31:0] RdData,
+    input DMOv,
+    output AdEL,
     output reg [31:0] Data
     );
 	always @(*)begin
@@ -67,6 +70,17 @@ module DBS(
                 Data = {{24{RdData[31]}},RdData[31:24]};
             end
         end
+        else if (LdType == `NOLOAD)begin
+            Data = 0;
+        end
     end
+    wire load = LdType == `NO_EXT || LdType == `UNSIGN_H_EXT || LdType == `UNSIGN_B_EXT || LdType == `SIGN_B_EXT || LdType == `SIGN_H_EXT;
+    wire AdIligle = (LdType == `NO_EXT) && (|Ad) || (LdType == `SIGN_H_EXT || LdType == `UNSIGN_H_EXT) && (Ad[0]);
+	wire AdOutRange =  (!((Addr >= `MIN_DM) && (Addr <= `MAX_DM )||
+						 (Addr >= `MIN_TC0) && (Addr <= `MAX_TC0)||
+						 (Addr >= `MIN_TC1) && (Addr <= `MAX_TC1))) && (load);
+    wire LoadTimer = (LdType == `UNSIGN_H_EXT || LdType == `UNSIGN_B_EXT || LdType == `SIGN_B_EXT || LdType == `SIGN_H_EXT) & ((Addr >= `MIN_TC0) && (Addr <= `MAX_TC0)||(Addr >= `MIN_TC1) && (Addr <= `MAX_TC1));
+
+    assign AdEL = AdIligle | AdOutRange | LoadTimer | DMOv;
 
 endmodule

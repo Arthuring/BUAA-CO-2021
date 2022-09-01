@@ -28,6 +28,8 @@ module ID_EX(
     input [31:0] D_PC,
 	input [31:0] D_Instr,
 	input D_b_jump,
+    input [4:0] D_exc,
+    input D_BD,
 	 
     output reg [31:0] E_V1,
     output reg [31:0] E_V2,
@@ -35,7 +37,9 @@ module ID_EX(
     output reg [31:0] E_PC8,
     output reg [31:0] E_PC,
 	output reg [31:0] E_Instr,
-	output reg E_b_jump
+	output reg E_b_jump,
+    output reg [4:0] E_exc,
+    output reg E_BD
     );
     always @(posedge clk) begin
         if(reset)begin
@@ -45,7 +49,9 @@ module ID_EX(
             E_PC8 <= 0;
             E_EXT  <= 0;
             E_Instr <= 0;
-				E_b_jump <= 0;
+			E_b_jump <= 0;
+            E_exc <= 0;
+            E_BD <= 0;
         end
         else begin
             E_V1 <= D_V1;
@@ -54,7 +60,9 @@ module ID_EX(
             E_PC8 <= D_PC8;
             E_EXT <= D_EXT;
             E_Instr <= D_Instr;
-				E_b_jump <= D_b_jump;
+			E_b_jump <= D_b_jump;
+            E_exc <= D_exc;
+            E_BD <= D_BD;
         end
     end
 

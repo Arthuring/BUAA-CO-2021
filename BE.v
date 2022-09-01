@@ -23,15 +23,19 @@ module BE(
 	input [1:0] Ad,
 	input [`StType_WIDE-1:0] StType,
 	input [31:0] Data,
+	input [31:0] Addr,
+	input Inq,
+	input DMOv,
+	output  AdES,
 	output reg [3:0] ByteEn,
 	output reg [31:0] WrData
     );
 	always @(*)begin
-		if (StType == `SW)begin
+		if ((StType == `SW) && (!AdES) && (!Inq)  )begin
 			ByteEn = `Save_Word;
 			WrData = Data;
 		end
-		else if (StType == `SH)begin
+		else if ((StType == `SH) && (!AdES) && (!Inq ) )begin
 			if (Ad[1] == 0) begin
 				ByteEn = `Save_Half_0;
 				WrData[15:0] = Data[15:0];
@@ -44,7 +48,7 @@ module BE(
 			end
 			else ByteEn = 4'd0;
 		end
-		else if (StType == `SB )begin
+		else if ((StType == `SB) && (!AdES) && (!Inq ))begin
 			if (Ad == 2'b00) begin
 				ByteEn = `Save_Byte_0;
 				WrData[7:0] = Data[7:0];
@@ -76,5 +80,16 @@ module BE(
 			ByteEn  = `Save_No_Byte;
 		end
 	end
+
+	wire AdIligle = (StType == `SW) && (|Ad) || (StType == `SH) && (Ad[0]);
+	wire AdOutRange =  (!((Addr >= `MIN_DM) && (Addr <= `MAX_DM )||
+						 (Addr >= `MIN_TC0) && (Addr <= `MAX_TC0)||
+						 (Addr >= `MIN_TC1) && (Addr <= `MAX_TC1))) && (StType != `NOSAVE);
+	wire ErrorSaveTimer = (StType == `SH || StType == `SB) && ((Addr >= `MIN_TC0) && (Addr <= `MAX_TC0)||(Addr >= `MIN_TC1) && (Addr <= `MAX_TC1)); 
+	wire SaveTimerCount = (StType != `NOSAVE) && ((Addr >= 32'h00007f08 && Addr <= 32'h00007f0b)||(Addr >= 32'h00007f18 && Addr <= 32'h00007f1b)); 
+	
+	
+	assign AdES = (AdIligle | AdOutRange | DMOv | ErrorSaveTimer | SaveTimerCount);
+
 	
 endmodule

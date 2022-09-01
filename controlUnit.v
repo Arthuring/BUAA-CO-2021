@@ -52,6 +52,16 @@ module CU(
 	 output md,
 	 output mt,
 	 output mf,
+	 
+	 //---CP0-------
+	 output CP0_WE,
+	 output mfc0,
+	 output mtc0,
+	 output eret,
+	 //----Exception------
+	 output ALU_Arith_Overflow,
+	 output ALU_DM_Overflow,
+	 output RI,
 	 //------------------control-----------------------
 	 output [`NPCOp_WIDE-1:0] NPCOp,
 	 //output WE,
@@ -150,6 +160,10 @@ module CU(
 	wire mtlo	= (Op == 6'b000000) && (Func == 6'b010011);
 	wire mfhi 	= (Op == 6'b000000) && (Func == 6'b010000);
 	wire mflo 	= (Op == 6'b000000) && (Func == 6'b010010);
+	//---------------CP0------------------------------------
+	assign mfc0	= (Op == 6'b010000) && (rs_ad == 5'b00000);
+	assign mtc0	= (Op == 6'b010000) && (rs_ad == 5'b00100);
+	assign eret	= (Instr == 32'b010000_1000_0000_0000_0000_0000_011000);
 	
 	////////////////////////////class//////////////////////////////////////////////////////////////////////////////////////////
 	
@@ -169,6 +183,7 @@ module CU(
 	assign branch_rs = ( blez | bgtz | bltz | bgez );
 	assign branch_rt = ( beq | bne );
 	
+	
 	////////////////////////////control Info///////////////////////////////////////////////////////////////////////////////////////
 
 	assign NPCOp	=	branch	? `BRNCH:
@@ -180,7 +195,7 @@ module CU(
 	
 	
 	assign write_reg =		 ( calc_r | mf | jalr )	? rd_ad :
-							 ( calc_i | load )	? rt_ad :
+							 ( calc_i | load | mfc0 )	? rt_ad :
 							 (jal)		?  5'd31 :
 							 5'd0;		 
 
@@ -224,6 +239,7 @@ module CU(
 							(j_al) ? `MGRFWDNPC :
 							(lui) ? `MGRFWDLui:
 							(mf)  ? `MGRFWDHILO: 
+							(mfc0) ? `MGRFWDCP0:
 							`MGRFWDALU;
 	assign MALUBSel	= ( calc_i | load | store ) ? `MALUBEXT:
 							2'b00;
@@ -246,7 +262,7 @@ module CU(
 					(lb) ? `SIGN_B_EXT :
 					(lhu) ? `UNSIGN_H_EXT :
 					(lbu) ? `UNSIGN_B_EXT :
-					0;
+					`NOLOAD;
 	assign MDUOp = 	(mult) 	? `MULT 	:
 				   	(multu) ? `MULTU	:
 					(div)	? `DIV		:
@@ -260,5 +276,18 @@ module CU(
 	assign MHILOSel = (mflo) ? `LO :
 					 (mfhi) ? `HI :
 					 0;
-
+	assign CP0_WE = mtc0;
+	//////////////////EXCPTION////////////////////////////
+	assign RI = !( lw | lb | lh | lhu | lbu |
+						addu | subu |add | sub | sllv | srlv | srav | slt | sltu | _and | _or | _xor | _nor | sll  | srl | sra |
+						ori | lui | addi | addiu | andi | xori | slti | sltiu |
+						sw | sh | sb |
+						beq | bne | blez | bgtz | bltz | bgez |
+						jal | j | jr |jalr |
+						sll | srl | sra |
+						mult | multu | div | divu |
+						mthi | mtlo | mfhi | mflo |
+						mfc0 | mtc0| eret);
+	assign ALU_Arith_Overflow = add | addi | sub;
+	assign ALU_DM_Overflow = lb | lbu | lh | lhu | lw | sb | sh | sw; 
 endmodule

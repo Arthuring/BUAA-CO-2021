@@ -32,6 +32,7 @@ module MEM_WB(
 	 input M_b_jump,
 	 input M_Mcndtn,
 	 input M_Ecndtn,
+     input [31:0] M_CP0,
 	 
     output reg [31:0] W_C,
     output reg [31:0] W_DR,
@@ -41,6 +42,7 @@ module MEM_WB(
    // output reg [4:0] W_A3,
     output reg [31:0] W_Instr,
     output reg [31:0] W_HILO,
+    output reg [31:0] W_CP0,
 	 output reg W_b_jump,
 	 output reg W_Mcndtn,
 	 output reg W_Ecndtn
@@ -58,6 +60,7 @@ module MEM_WB(
 				W_b_jump <= 0;
 				W_Mcndtn <= 0;
 				W_Ecndtn <= 0; 
+                W_CP0 <= 0;
         end
         else begin
             W_C     <= M_C;
@@ -71,6 +74,7 @@ module MEM_WB(
 				W_b_jump <= M_b_jump;
 				W_Mcndtn <= M_Mcndtn;
 				W_Ecndtn <= M_Ecndtn;
+                W_CP0 <= M_CP0;
         end
     end
 

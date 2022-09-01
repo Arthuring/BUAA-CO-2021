@@ -23,6 +23,11 @@ module ALU(
     input [31:0] A,
     input [31:0] B,
     input [3:0] ALUOp,
+	input ALU_Arith_Overflow,
+	input ALU_DM_Overflow,
+
+	 output ALU_Ov,
+     output DM_Ov,
     output reg [31:0] C
    // output reg zero
     );
@@ -80,4 +85,9 @@ always @(*)begin
 	endcase
 end
 
+wire [32:0] Ext_A = {A[31], A}, Ext_B = {B[31], B};
+wire [32:0] Ext_Add = Ext_A + Ext_B, Ext_Sub = Ext_A - Ext_B;
+
+assign ALU_Ov = (ALU_Arith_Overflow) && (((ALUOp == `ADD) && (Ext_Add[32] != Ext_Add[31])) ||((ALUOp == `SUB)&&(Ext_Sub[32] != Ext_Sub[31])));
+assign DM_Ov = (ALU_DM_Overflow) && (((ALUOp == `ADD) && (Ext_Add[32] != Ext_Add[31])) ||((ALUOp == `SUB)&&(Ext_Sub[32] != Ext_Sub[31])));
 endmodule

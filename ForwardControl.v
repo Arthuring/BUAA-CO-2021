@@ -45,8 +45,8 @@ module ForwardControl(
     wire [4:0] M_rt_ad;
     //write_addr
     wire [4:0] E_A, M_A, W_A;
-	 wire E_calc_r, E_calc_i, E_load,E_branch, E_j_r,E_store, E_Lui, E_jal, E_md, E_mf, E_mt;
-	 wire M_calc_r, M_calc_i, M_load,M_branch, M_j_r,M_store,M_Lui, M_jal;
+	 wire E_calc_r, E_calc_i, E_load,E_branch, E_j_r,E_store, E_Lui, E_jal, E_md, E_mf, E_mt, E_mfc0;
+	 wire M_calc_r, M_calc_i, M_load,M_branch, M_j_r,M_store,M_Lui, M_jal, M_mfc0;
 	 wire [2:0] D_Tuse_rs, D_Tuse_rt, E_Tnew, M_Tnew; 
 	 
     CU d_f_cu(
@@ -70,7 +70,8 @@ module ForwardControl(
         .j_al(E_jal),
         .Lui(E_Lui),
 		   .mf(E_mf),
-		  .md(E_md)
+		  .md(E_md),
+          .mfc0(E_mfc0)
     );
     CU m_f_cu(
         .Instr(M_Instr),
@@ -86,7 +87,8 @@ module ForwardControl(
         .branch(M_branch),
         .j_r(M_j_r),
         .j_al(M_jal),
-        .Lui(M_Lui)
+        .Lui(M_Lui),
+        .mfc0(M_mfc0)
     );
     CU w_f_cu(
         .Instr(W_Instr),
@@ -98,11 +100,11 @@ module ForwardControl(
 	
 	assign E_Tnew = (E_Lui |E_jal ) ? 3'd0 :
                     ((E_calc_i & (!E_Lui)) | E_calc_r | E_mf ) ? 3'd1:
-                    E_load ? 3'd2:
+                    (E_load | E_mfc0) ? 3'd2:
                     3'd0;    
 	 assign M_Tnew = (M_Lui |M_jal ) ? 3'd0 :
                     ((M_calc_i & (!M_Lui)) | M_calc_r ) ? 3'd0:
-                    M_load ? 3'd1:
+                    (M_load | M_mfc0) ? 3'd1:
                     3'd0; 
 	
     assign D_MFRD1Sel = (E_A != 5'b0 && D_rs_ad == E_A && E_Tnew == 0)    ? `E_TO_D   :

@@ -80,6 +80,7 @@
 `define MGRFWDNPC	3'b010
 `define MGRFWDLui	3'b011
 `define MGRFWDHILO  3'b100
+`define MGRFWDCP0   3'b101
 ////////MALUBSel//////////////////////
 `define MALUBRD2	2'b00
 `define MALUBEXT	2'b01
@@ -126,7 +127,7 @@
 `define SIGN_B_EXT	3'b010
 `define UNSIGN_H_EXT	3'b011
 `define SIGN_H_EXT	3'b100
-
+`define NOLOAD      3'b101
 ///////////////MDU////////////////
 `define MULT			4'b0000
 `define MULTU			4'b0001
@@ -139,3 +140,25 @@
 ////////////HILOSel/////////////
 `define HI              1'b0
 `define LO              1'b1
+
+
+///////////CP0//////////////////
+`define SR_Addr 			5'd12
+`define Cause_Addr		    5'd13
+`define EPC_Addr			5'd14		
+//////////DMMap////////////////////
+`define MIN_DM          32'h00000000
+`define MAX_DM          32'h00002fff
+`define MIN_TC0         32'h00007f00
+`define MAX_TC0         32'h00007f0b
+`define MIN_TC1         32'h00007f10
+`define MAX_TC1         32'h00007f1b
+`define MIN_PC          32'h00003000
+`define MAX_PC          32'h00006fff
+//////////ExcCode///////////////////
+`define NONEXC          5'd0
+`define EXCInt          5'd0
+`define EXCAdEL         5'd4
+`define EXCAdES         5'd5
+`define EXCRI           5'd10
+`define EXCOv           5'd12
