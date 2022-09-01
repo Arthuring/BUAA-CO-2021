@@ -64,6 +64,18 @@ always @(*)begin
                 C = 32'd0;
             end
         end
+        `XOR:begin
+            C = A ^ B;
+        end
+        `NOR:begin
+            C = ~ (A | B);
+        end
+        `SRL:begin
+            C = B >> A[4:0];
+        end
+        `SRA:begin
+            C = $signed(B) >>> A[4:0];
+        end
 
 	endcase
 end

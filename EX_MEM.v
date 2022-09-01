@@ -27,7 +27,10 @@ module EX_MEM(
     input [31:0] E_PC8,
     //input [4:0] E_A3,
     input [31:0] E_EXT,
-    input [31:0] E_Instr,	 
+    input [31:0] E_Instr,
+    input [31:0] E_HILO,	 
+	 input E_b_jump,
+	 input E_Ecndtn,
 	 
     output reg [31:0] M_C,
     output reg [31:0] M_V2,
@@ -35,7 +38,10 @@ module EX_MEM(
     output reg [31:0] M_PC8,
     output reg [31:0] M_EXT,
     //output reg [4:0] M_A3, 
-    output reg [31:0] M_Instr
+    output reg [31:0] M_Instr,
+    output reg [31:0] M_HILO,
+	 output reg M_b_jump,
+	 output reg M_Ecndtn
     );
     
     always @(posedge clk) begin
@@ -47,6 +53,9 @@ module EX_MEM(
            // M_A3  <= 0;
             M_EXT <= 0;
             M_Instr <= 0;
+            M_HILO <= 0;
+				M_b_jump <= 0;
+				M_Ecndtn <= 0;
         end
         else begin
             M_C <= E_C;
@@ -56,6 +65,9 @@ module EX_MEM(
             M_EXT <= E_EXT;
             //M_A3  <= E_A3;
             M_Instr <= E_Instr;
+            M_HILO <= E_HILO;
+				M_b_jump <= E_b_jump;
+				M_Ecndtn <= E_Ecndtn;
         end
     end
 

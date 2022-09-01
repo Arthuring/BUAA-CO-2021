@@ -35,7 +35,7 @@ module NPC(
 			`PC4:begin
 				NPC = F_PC + 32'd4;
 			end
-			`BEQ:begin
+			`BRNCH:begin
 				if (b_jump == 0)begin
 					NPC = F_PC + 32'd4;
 				end

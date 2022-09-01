@@ -32,5 +32,5 @@ module IM(
 			end
 			$readmemh("code.txt",IMm);
 		end
-		assign RD = IMm[I[14:2]-13'hc00];
+		assign RD = IMm[I[13:2]-12'hc00];
 endmodule

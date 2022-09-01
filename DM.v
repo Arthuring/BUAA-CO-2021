@@ -53,7 +53,7 @@ module DM(
 							1:dm[A[13:2]][31:16] <= WD[15:0];
 						endcase
 						//$display("@%h: *%h <= %h", PC, A, dm[A[13:2]]);
-						$display("%d@%h: *%h <= %h", $time, PC, A, {16'b0,WD[15:0]});
+						$display("%d@%h: *%h <= %h", $time, PC, A, dm[A[13:2]]);
 					end
 					else if (DMOp == `BITE) begin
 						case(A[1:0]) 
@@ -63,7 +63,7 @@ module DM(
 							2'b11: dm[A[13:2]][31:24] <= WD[7:0];
 						endcase
 						//$display("@%h: *%h <= %h", PC, A, dm[A[13:2]]);
-						$display("%d@%h: *%h <= %h", $time, PC, A, {24'b0,WD[7:0]});
+						$display("%d@%h: *%h <= %h", $time, PC, A, dm[A[13:2]]);
 					end
             end
         end
