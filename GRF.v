@@ -47,12 +47,17 @@ module GRF(
 		end
 		else begin
 			if (WE == 1)begin
-				$display("@%h: $%d <= %h", PC, A3, WD);
+				//$display("@%h: $%d <= %h", PC, A3, WD);
+				$display("%d@%h: $%d <= %h", $time, PC, A3, WD);
 				GRFreg[A3] <= WD;
 			end
 		end
 	end
 	
-	assign RD1 = (A1 == 0) ? 32'b0 : GRFreg[A1];
-	assign RD2 = (A2 == 0) ? 32'b0 : GRFreg[A2];
+	assign RD1 = (A1 == 0) ? 32'b0	:
+				 (A1 == A3 && A3 != 32'd0) && WE ? WD 	: 
+				 GRFreg[A1];
+	assign RD2 = (A2 == 0) ? 32'b0 :
+				 (A2 == A3 && A3 != 32'd0) && WE	? WD	:
+				  GRFreg[A2];
 endmodule

@@ -23,32 +23,27 @@ module ALU(
     input [31:0] A,
     input [31:0] B,
     input [3:0] ALUOp,
-    output reg [31:0] C,
-    output reg zero
+    output reg [31:0] C
+   // output reg zero
     );
 
 always @(*)begin
 	case(ALUOp)
 		`AND:begin
 			C = A & B;
-			zero = 0;
+			//zero = 0;
 		end
         `OR:begin
             C = A | B;
-				zero = 0;
+				//zero = 0;
         end
         `ADD:begin
             C = A + B;
-				zero = 0;
+				//zero = 0;
         end
         `SUB:begin
             C = A - B;
-				if (C == 0)begin
-					zero = 1;
-				end
-				else begin
-					zero = 0;
-				end
+				
         end
         `SLT:begin
             if ($signed(A) < $signed(B)) begin

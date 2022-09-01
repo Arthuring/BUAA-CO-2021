@@ -18,47 +18,72 @@
 // Additional Comments: 
 //
 //////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////WIDE//////////////////////////////
+`define ALUOp_WIDE			4
+`define NPCOp_WIDE			3
+`define EXTOp_WIDE			2
+`define MGRFWDSel_WIDE		3
+`define MALUBSel_WIDE		2
+`define MALUASel_WIDE		2
+`define DMOp_WIDE				3
+
 ///////////ALU Options///////////////
-`define AND 4'b0000
-`define OR 4'b0001
-`define ADD 4'b0010
-`define SUB 4'b0011
-`define SLT 4'b0100
-`define SLL 4'b0101
-`define SLTU 4'b0110
+`define AND         4'b0000
+`define OR          4'b0001
+`define ADD         4'b0010
+`define SUB         4'b0011
+`define SLT         4'b0100
+`define SLL         4'b0101
+`define SLTU        4'b0110
 
 ///////////PC///////////////////////
-`define PC_INI 32'h00003000
+`define PC_INI      32'h00003000
 
 //////////IM////////////////////////
-`define IM_SIZE 1024
+`define IM_SIZE     31'd4096
 
 //////////NPC///////////////////////
-`define PC4 3'b000
-`define BEQ 3'b001
-`define J 3'b010
-`define JR 3'b011
+`define PC4         3'b000
+`define BEQ         3'b001
+`define J           3'b010
+`define JR          3'b011
 
 /////////EXT////////////////////////
-`define ZERO 1'b0
-`define SIGNED 1'b1
-
-////////M1Sel//////////////////////
-`define M1Rd 2'b00
-`define M1Rt 2'b01
-`define M1R31 2'b10
-////////M2Sel//////////////////////
-`define M2ALU		2'b00
-`define M2DW		2'b01
-`define M2NPC		2'b10
-`define M2Lui		2'b11
-////////M3Sel//////////////////////
-`define M3RD2		2'b00
-`define M3EXT		2'b01
-////////M4Sel//////////////////////
-`define M4RD1		1'b0
-`define M4EXT		1'b1
-///////////////////////////////////
-`define WORD		2'b00
-`define HALF		2'b01
-`define BITE		2'b10
+`define ZERO        2'b00
+`define SIGNED      2'b01
+`define EXT_LUI     2'b10
+////////MA3Sel//////////////////////
+`define MA3Rd       2'b00
+`define MA3Rt       2'b01
+`define MA3R31      2'b10
+////////MGRFWDSel//////////////////////
+`define MGRFWDALU	3'b000
+`define MGRFWDDW	3'b001
+`define MGRFWDNPC	3'b010
+`define MGRFWDLui	3'b011
+`define MGRFWDLHSO 3'b100
+////////MALUBSel//////////////////////
+`define MALUBRD2	2'b00
+`define MALUBEXT	2'b01
+////////MALUASel//////////////////////
+`define MALUARD1	2'b00
+`define MALUA_SHALT	2'b01
+///////////////DMOp//////////////////
+`define WORD		3'b000
+`define HALF		3'b001
+`define BITE		3'b010
+///////////////////FORWARD////////
+`define E_TO_D      2'b10
+`define M_TO_D      2'b01
+`define M_TO_E      2'b10
+`define W_TO_E      2'b01 
+`define W_TO_M      2'b01 
+`define NoForward   2'b00
+////////////////M_MGRFWD//////////
+`define M_PC8       2'b01
+`define M_C         2'b00
+`define M_EXT		  2'b10
+///////////////E_MGRFWD///////////
+`define E_PC8       2'b01
+`define E_EXT       2'b10
+`define E_NO_GEN    2'b11

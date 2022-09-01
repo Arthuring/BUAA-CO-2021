@@ -21,7 +21,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 module IM(
     input [31:0] I,
-    output [31:0] D
+    output [31:0] RD
     );
 
 		reg [31: 0] IMm [0 : `IM_SIZE - 1 ];
@@ -32,5 +32,5 @@ module IM(
 			end
 			$readmemh("code.txt",IMm);
 		end
-		assign D = IMm[I[11:2]];
+		assign RD = IMm[I[14:2]-13'hc00];
 endmodule

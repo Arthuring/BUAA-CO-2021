@@ -1,12 +1,11 @@
 `timescale 1ns / 1ps
-`include "macro.v"
 //////////////////////////////////////////////////////////////////////////////////
 // Company: 
 // Engineer: 
 // 
-// Create Date:    18:41:12 11/11/2021 
+// Create Date:    23:26:09 11/20/2021 
 // Design Name: 
-// Module Name:    PC 
+// Module Name:    CMP 
 // Project Name: 
 // Target Devices: 
 // Tool versions: 
@@ -19,27 +18,19 @@
 // Additional Comments: 
 //
 //////////////////////////////////////////////////////////////////////////////////
-module PC(
-	input clk,
-	input reset,
-	input WE,
-    input [31:0] DI,
-    output [31:0] DO
+module CMP(
+    input [31:0] CMP_RS,
+    input [31:0] CMP_RT,
+    output reg b_jump
     );
-
-	reg [31:0] pc;
-	initial begin
-		pc = `PC_INI;
-	end
-	
-	always @(posedge clk)begin
-		if(reset == 1)begin
-			pc <= `PC_INI;
+	 
+	always@(*)begin
+		if (CMP_RS == CMP_RT)begin
+			b_jump = 1;
 		end
 		else begin
-			if (WE == 1) pc <= DI;
+			b_jump = 0;
 		end
 	end
-	assign DO = pc;
-	
+
 endmodule

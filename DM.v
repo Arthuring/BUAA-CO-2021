@@ -26,16 +26,16 @@ module DM(
     input [31:0] A,
     input [31:0] WD,
     input DMWr,
-	 input [1:0] DMOp,
+	 input [2:0] DMOp,
 	 input IfSigned,
     output reg [31:0] RD
     );
-    reg [31:0] dm [0:1023];
+    reg [31:0] dm [0:3072];
     integer i;
 	 //write
     always @(posedge clk)begin
         if(reset == 1)begin
-            for(i = 0; i<1024;i = i + 1)begin
+            for(i = 0; i<3072;i = i + 1)begin
                 dm[i] <= 32'b0;
             end
 
@@ -43,24 +43,27 @@ module DM(
         else begin
             if(DMWr == 1)begin
 					if(DMOp == `WORD)begin
-						$display("@%h: *%h <= %h", PC, A, WD);
-						dm[A[11:2]] <= WD;
+					//	$display("@%h: *%h <= %h", PC, A, WD);
+						$display("%d@%h: *%h <= %h", $time, PC, A, WD);
+						dm[A[13:2]] <= WD;
 					end
 					else if (DMOp == `HALF)begin
 						case(A[1])
-							0:dm[A[11:2]][15:0] <= WD[15:0];
-							1:dm[A[11:2]][31:16] <= WD[15:0];
+							0:dm[A[13:2]][15:0] <= WD[15:0];
+							1:dm[A[13:2]][31:16] <= WD[15:0];
 						endcase
-						$display("@%h: *%h <= %h", PC, A, dm[A[11:2]]);
+						//$display("@%h: *%h <= %h", PC, A, dm[A[13:2]]);
+						$display("%d@%h: *%h <= %h", $time, PC, A, {16'b0,WD[15:0]});
 					end
 					else if (DMOp == `BITE) begin
 						case(A[1:0]) 
-							2'b00: dm[A[11:2]][7:0] <= WD[7:0];
-							2'b01: dm[A[11:2]][15:8] <= WD[7:0];
-							2'b10: dm[A[11:2]][23:16] <= WD[7:0];
-							2'b11: dm[A[11:2]][31:24] <= WD[7:0];
+							2'b00: dm[A[13:2]][7:0] <= WD[7:0];
+							2'b01: dm[A[13:2]][15:8] <= WD[7:0];
+							2'b10: dm[A[13:2]][23:16] <= WD[7:0];
+							2'b11: dm[A[13:2]][31:24] <= WD[7:0];
 						endcase
-						$display("@%h: *%h <= %h", PC, A, dm[A[11:2]]);
+						//$display("@%h: *%h <= %h", PC, A, dm[A[13:2]]);
+						$display("%d@%h: *%h <= %h", $time, PC, A, {24'b0,WD[7:0]});
 					end
             end
         end
@@ -69,15 +72,15 @@ module DM(
     //assign RD = dm[A[11:2]];
 	 always @(*)begin
 		if (DMOp == `WORD) begin
-			RD = dm[A[11:2]];
+			RD = dm[A[13:2]];
 		end
 		else if (DMOp == `HALF) begin
 			case(A[1])
 				0:begin
-					RD[15:0] = dm[A[11:2]][15:0]; 
+					RD[15:0] = dm[A[13:2]][15:0]; 
 				end
 				1:begin
-					RD[15:0] = dm[A[11:2]][31:16];
+					RD[15:0] = dm[A[13:2]][31:16];
 				end
 			endcase
 			case(IfSigned) 
@@ -87,10 +90,10 @@ module DM(
 		end
 		else if (DMOp == `BITE)begin
 			case(A[1:0])
-				2'b00: RD[7:0] = dm[A[11:2]][7:0]; 
-				2'b01: RD[7:0] = dm[A[11:2]][15:8]; 
-				2'b10: RD[7:0] = dm[A[11:2]][23:16]; 
-				2'b11: RD[7:0] = dm[A[11:2]][31:24]; 
+				2'b00: RD[7:0] = dm[A[13:2]][7:0]; 
+				2'b01: RD[7:0] = dm[A[13:2]][15:8]; 
+				2'b10: RD[7:0] = dm[A[13:2]][23:16]; 
+				2'b11: RD[7:0] = dm[A[13:2]][31:24]; 
 			endcase
 			case(IfSigned)
 				0: RD[31:8] = 24'b0;

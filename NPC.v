@@ -20,36 +20,40 @@
 //
 //////////////////////////////////////////////////////////////////////////////////
 module NPC(
-    input [31:0] PC,
+    input [31:0] F_PC,
+	input [31:0] D_PC,
     output reg [31:0] NPC,
     input [25:0] Imm,
-    output reg [31:0] PC4,
+    output reg [31:0] PC8,
     input [2:0] NPCOp,
     input [31:0] RA,
-    input zero
+    input b_jump
     );
 	
 	always @(*)begin
 		case(NPCOp)
 			`PC4:begin
-				NPC = PC + 32'd4;
+				NPC = F_PC + 32'd4;
 			end
 			`BEQ:begin
-				if (zero == 0)begin
-					NPC = PC + 32'd4;
+				if (b_jump == 0)begin
+					NPC = F_PC + 32'd4;
 				end
 				else begin
-					NPC = PC + 32'd4 + {{14{Imm[15]}},Imm[15:0] ,2'b00};
+					NPC = D_PC + 32'd4 + {{14{Imm[15]}},Imm[15:0] ,2'b00};
 				end
 			end
 			`J:begin
-				NPC = {PC[31:28],Imm,2'b00};
+				NPC = {D_PC[31:28],Imm,2'b00};
 			end
 			`JR:begin
 				NPC = RA;
 			end
+			default begin
+				NPC = F_PC + 32'd4;
+			end
 		endcase
-		PC4 = PC + 32'd4;
+		PC8 = F_PC + 32'd8;
 	end
 	
 endmodule

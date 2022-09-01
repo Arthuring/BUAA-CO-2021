@@ -21,23 +21,65 @@
 module DataPath(
     input clk,
     input reset,
-	 input [2:0] NPCOp,
-	 input WE,
-	 input EXTOp,
-	 input [3:0] ALUOp,
-	 input DMWr,
-	 input [1:0] DMOp,
-	 input IfSigned,
-	 input [1:0] M1Sel,
-	 input [1:0] M2Sel,
-	 input [1:0] M3Sel,
-	 input M4Sel,
-	 output [31 : 0] Instract
-	 //output [31 : 0] PC
+	 
+	///F///
+	//output [31:0] F_instr,
+	
+	
+	///D///
+	output [31:0] D_Instr,
+	
+	///E///
+	output [31:0] E_Instr,
+	
+	///M///
+	output [31:0] M_Instr,
+	
+	///W///
+	output [31:0] W_Instr,
+	
     );
-	      
+	//=====================FFFFFFFF=================
+	
+	wire [31:0] F_PC_DO;
+	wire [31:0] F_Instr;
+	 
+	PC F_PC(
+		.clk(clk),
+		.reset(reset),
+		.DI(),
+		.DO(F_PC_DO),
+		.WE()
+	
+	);
+	
+	IM F_IM(
+		.I(F_PC_DO),
+		.RD(F_Instr)
+	);
+	
+	 
+	//=====================FFFFFFFF=================
+	
+	IF_ID D_reg(
+		.clk(clk),
+		.reset(reset),
+		.F_Instr(F_Instr),
+		.F_PC4(),
+		.D_Instr(),
+		.D_PC4()
+	);
+	
+	
+	//=====================DDDDDDDD=================
+	
+	
+	
+	
+	
+	//=====================DDDDDDDD=================
 	wire [31:0] PC_DO;
-	wire [31:0] IM_D;
+	wire [31:0] IM_RD;
 	wire [31:0] GRF_RD1;
 	wire [31:0] GRF_RD2;
 	wire [31:0] EXT_Ext;
@@ -69,12 +111,12 @@ module DataPath(
 	
 	IM im(
 		.I(PC_DO),
-		.D(IM_D)
+		.RD(IM_RD)
 	);
 	
 
 	EXT ext(
-		.Imm(IM_D[15:0]),
+		.Imm(IM_RD[15:0]),
 		.EXTOp(EXTOp),
 		.Ext(EXT_Ext)
 	);
@@ -85,7 +127,7 @@ module DataPath(
 		.NPC(NPC_NPC),
 		.NPCOp(NPCOp),
 		.PC4(NPC_PC4),
-		.Imm(IM_D[25:0]),
+		.Imm(IM_RD[25:0]),
 		.RA(GRF_RD1),
 		.zero(ALU_Zero)
 	);
@@ -93,8 +135,8 @@ module DataPath(
 	GRF grf(
 		.clk(clk),
 		.reset(reset),
-		.A1(IM_D[25:21]),
-		.A2(IM_D[20:16]),
+		.A1(IM_RD[25:21]),
+		.A2(IM_RD[20:16]),
 		.A3(M1_O),
 		.WD(M2_O),
 		.WE(WE),
@@ -127,14 +169,14 @@ module DataPath(
 		.I0(ALU_C),
 		.I1(DM_RD),
 		.I2(NPC_PC4),
-		.I3({IM_D[15:0],{16{1'b0}}}),
+		.I3({IM_RD[15:0],{16{1'b0}}}),
 		.Op(M2Sel),
 		.Out(M2_O)
 	);
 	
 	MUX_b2_5 M1(
-		.I0(IM_D[15:11]),
-		.I1(IM_D[20:16]),
+		.I0(IM_RD[15:11]),
+		.I1(IM_RD[20:16]),
 		.I2(5'h1f),
 		.I3(),
 		.Op(M1Sel),
@@ -150,11 +192,11 @@ module DataPath(
 	);
 	MUX_b1_32 M4(
 		.I0(GRF_RD1),
-		.I1({27'd0,IM_D[10:6]}),
+		.I1({27'd0,IM_RD[10:6]}),
 		.Op(M4Sel),
 		.Out(M4_O)
 	); 
 	 
-	assign Instract = IM_D;
+	assign Instract = IM_RD;
 	//assign PC = PC_DO;
 endmodule
