@@ -1,0 +1,55 @@
+`timescale 1ns / 1ps
+`include "macro.v"
+//////////////////////////////////////////////////////////////////////////////////
+// Company: 
+// Engineer: 
+// 
+// Create Date:    19:22:45 11/11/2021 
+// Design Name: 
+// Module Name:    NPC 
+// Project Name: 
+// Target Devices: 
+// Tool versions: 
+// Description: 
+//
+// Dependencies: 
+//
+// Revision: 
+// Revision 0.01 - File Created
+// Additional Comments: 
+//
+//////////////////////////////////////////////////////////////////////////////////
+module NPC(
+    input [31:0] PC,
+    output reg [31:0] NPC,
+    input [25:0] Imm,
+    output reg [31:0] PC4,
+    input [2:0] NPCOp,
+    input [31:0] RA,
+    input zero
+    );
+	
+	always @(*)begin
+		case(NPCOp)
+			`PC4:begin
+				NPC = PC + 32'd4;
+			end
+			`BEQ:begin
+				if (zero == 0)begin
+					NPC = PC + 32'd4;
+				end
+				else begin
+					NPC = PC + 32'd4 + {{14{Imm[15]}},Imm[15:0] ,2'b00};
+				end
+			end
+			`J:begin
+				NPC = {PC[31:28],Imm,2'b00};
+			end
+			`JR:begin
+				NPC = RA;
+			end
+		endcase
+		PC4 = PC + 32'd4;
+	end
+	
+endmodule
